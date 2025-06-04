@@ -2,6 +2,8 @@
 
 Project Title: Public API for Educational and Learning Purposes (APIverse)
 
+API Documentation & Usage Guide: https://your-api-url-here.com](http://apiverse.runasp.net/swagger/index.html
+
 Project Description: This project (APIverse) aims to develop a publicly accessible API designed for educational and learning purposes. The API will provide structured data and functionalities that help users understand how APIs work, including authentication, data retrieval, and integration with various applications. The project is purely for knowledge enhancement and experimentation, helping students, developers, and technology enthusiasts learn about API development, usage, and best practices.
 
 Key Features:
