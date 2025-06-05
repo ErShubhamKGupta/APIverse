@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "DIGIPIN Generator";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">DIGIPIN Generator</h2>
+
+    <form asp-action="GenerateDigiPin" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label for="latitude" class="form-label">Latitude</label>
+            <input type="number" step="any" class="form-control" name="latitude" required>
+        </div>
+        <div class="col-md-6">
+            <label for="longitude" class="form-label">Longitude</label>
+            <input type="number" step="any" class="form-control" name="longitude" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Generate</button>
+        </div>
+    </form>
+
+    @if (TempData["DigiPinResult"] != null)
+    {
+        <div class="alert alert-success mt-4 d-flex justify-content-between align-items-center">
+            <div>
+                <strong>DIGIPIN:</strong> <span id="digiPinText">@TempData["DigiPinResult"]</span>
+            </div>
+            <button class="btn btn-success btn-sm ms-3" onclick="copyToClipboard()">Copy</button>
+        </div>
+    }
+</div>
+
+<script>
+    function copyToClipboard() {
+        const digiPin = document.getElementById("digiPinText").textContent;
+        navigator.clipboard.writeText(digiPin)
+            .then(() => alert("DIGIPIN copied to clipboard!"))
+            .catch(err => alert("Failed to copy DIGIPIN"));
+    }
+</script>
