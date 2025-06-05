@@ -13,6 +13,13 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddLogging();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowUI",
+        policy => policy.WithOrigins("https://localhost:5276") // UI port
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -37,6 +44,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1"));
 }
+
+app.UseCors("AllowUI");
 
 app.UseHttpsRedirection();
 
