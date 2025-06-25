@@ -1,7 +1,6 @@
 ﻿using APIverse.Models;
 using APIverse.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace APIverse.Controllers
 {
@@ -40,5 +39,29 @@ namespace APIverse.Controllers
             _logger.LogInformation("DIGIPIN generated successfully: {DigiPin}", result);
             return Ok(new DigiPinResponse { DigiPin = result });
         }
+
+        [HttpPost("decode")]
+        public IActionResult Decode([FromBody] ReverseDigiPinRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.DigiPin))
+                return BadRequest("DIGIPIN is required.");
+
+            try
+            {
+                var (lat, lon) = _service.Decode(request.DigiPin);
+                return Ok(new ReverseDigiPinResponse { Latitude = lat, Longitude = lon });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to decode DIGIPIN.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }
