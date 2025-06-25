@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Reverse DIGIPIN Lookup";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">🔁 Reverse DIGIPIN Lookup</h2>
+
+    <form asp-controller="Home" asp-action="DecodeDigiPin" method="post">
+        <div class="mb-3">
+            <label for="digiPin" class="form-label">Enter DIGIPIN:</label>
+            <input type="text" class="form-control" name="digiPin" id="digiPin" placeholder="e.g., 39J-34T-T563" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Decode</button>
+    </form>
+
+    @if (TempData["DecodedResult"] != null)
+    {
+        var msg = TempData["DecodedResult"].ToString();
+        var isError = msg.StartsWith("DIGIPIN") || msg.StartsWith("Error") || msg.StartsWith("No");
+
+        <div class="alert @(isError ? "alert-danger" : "alert-info") mt-4">
+            <strong>@msg</strong>
+            @if (!isError)
+            {
+                <button class="btn btn-success btn-sm ms-3" onclick="copyToClipboard()">Copy</button>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    function copyToClipboard() {
+        const text = document.querySelector(".alert strong").nextSibling.textContent.trim();
+        navigator.clipboard.writeText(text)
+            .then(() => alert("Coordinates copied to clipboard!"))
+            .catch(() => alert("Failed to copy."));
+    }
+</script>

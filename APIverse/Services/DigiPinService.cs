@@ -68,5 +68,53 @@
 
             return digiPin;
         }
+
+        public (double Latitude, double Longitude) Decode(string digiPin)
+        {
+            digiPin = digiPin.Replace("-", "").ToUpper();
+            if (digiPin.Length != 10)
+                throw new ArgumentException("DIGIPIN must be 10 characters long.");
+
+            double minLat = 2.5, maxLat = 38.5;
+            double minLon = 63.5, maxLon = 99.5;
+
+            for (int level = 0; level < 10; level++)
+            {
+                char ch = digiPin[level];
+
+                // Find row and col in grid
+                int row = -1, col = -1;
+                for (int r = 0; r < 4; r++)
+                {
+                    for (int c = 0; c < 4; c++)
+                    {
+                        if (Grid[r, c] == ch)
+                        {
+                            row = r;
+                            col = c;
+                            break;
+                        }
+                    }
+                    if (row != -1) break;
+                }
+
+                if (row == -1 || col == -1)
+                    throw new ArgumentException($"Invalid character '{ch}' in DIGIPIN");
+
+                double latStep = (maxLat - minLat) / 4;
+                double lonStep = (maxLon - minLon) / 4;
+
+                maxLat = maxLat - (latStep * row);
+                minLat = maxLat - latStep;
+
+                minLon = minLon + (lonStep * col);
+                maxLon = minLon + lonStep;
+            }
+
+            double approxLat = (minLat + maxLat) / 2;
+            double approxLon = (minLon + maxLon) / 2;
+
+            return (approxLat, approxLon);
+        }
     }
 }

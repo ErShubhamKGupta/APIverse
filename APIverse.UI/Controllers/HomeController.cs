@@ -18,6 +18,7 @@ namespace APIverse.UI.Controllers
         public IActionResult Index() => View();
 
         public IActionResult DigiPin() => View();
+        public IActionResult ReverseLookup() => View();
 
         [HttpPost]
         public async Task<IActionResult> GenerateDigiPin(double latitude, double longitude)
@@ -45,9 +46,45 @@ namespace APIverse.UI.Controllers
             return RedirectToAction("DigiPin");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DecodeDigiPin(string digiPin)
+        {
+            var client = _httpClientFactory.CreateClient();
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(new { digiPin }),
+                Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("https://localhost:7028/api/digipin/decode", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["DecodedResult"] = "DIGIPIN is invalid or could not be decoded.";
+            }
+            else
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<ReverseDigiPinResponse>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                TempData["DecodedResult"] = result != null
+                    ? $"Latitude = {result.Latitude}, Longitude = {result.Longitude}"
+                    : "No coordinates returned";
+            }
+
+            return RedirectToAction("ReverseLookup");
+        }
+
         public class DigiPinResponse
         {
             public string digiPin { get; set; }
+        }
+        public class ReverseDigiPinResponse
+        {
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
         }
     }
 
